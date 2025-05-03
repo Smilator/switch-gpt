@@ -36,7 +36,12 @@ nav a {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  min-height: 320px;
+  min-height: 360px;
+  transition: all 0.2s ease;
+}
+.game-card.locked {
+  border: 2px solid #007bff;
+  background: rgba(0, 123, 255, 0.05);
 }
 .game-card h3 {
   font-size: 1rem;
@@ -47,13 +52,13 @@ nav a {
 }
 .game-card img {
   width: 100%;
+  aspect-ratio: 1/1;
   border-radius: 8px;
-  max-height: 160px;
   object-fit: cover;
   margin-bottom: 1rem;
 }
-.buttons {
-  margin-top: auto;
+.buttons, .controls {
+  margin-top: 0.5rem;
   width: 100%;
 }
 .buttons a {
@@ -68,4 +73,23 @@ nav a {
 }
 .buttons a:hover {
   background: #d2d2d2;
+}
+.controls button {
+  background: #eee;
+  border: none;
+  padding: 0.4rem;
+  margin: 0 4px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.controls button.lock {
+  color: #007bff;
+}
+.controls button:hover {
+  background: #ddd;
+}
+.counter {
+  font-size: 0.9em;
+  margin-left: 4px;
+  color: #666;
 }

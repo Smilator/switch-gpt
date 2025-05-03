@@ -8,6 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function getLocalState(id) {
+  return JSON.parse(localStorage.getItem("game-state-" + id) || "{}");
+}
+
+function setLocalState(id, state) {
+  localStorage.setItem("game-state-" + id, JSON.stringify(state));
+}
+
 async function loadAndRender(type) {
   const container = document.getElementById('game-list');
   container.innerHTML = "<p>Caricamento...</p>";
@@ -29,6 +37,7 @@ function renderGames(games) {
   }
 
   games.forEach(game => {
+    const state = getLocalState(game.id);
     let imageUrl = '';
     if (typeof game.cover === 'object' && game.cover.image_id) {
       imageUrl = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
@@ -38,13 +47,53 @@ function renderGames(games) {
 
     const card = document.createElement('div');
     card.className = 'game-card';
+    if (state.locked) card.classList.add('locked');
+
     card.innerHTML = `
       <h3>${game.name}</h3>
       ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" />` : ''}
+      <div class="controls">
+        ${state.locked ? `
+          <button onclick="unlock('${game.id}', this)">🔓 Sblocca</button>
+        ` : `
+          <button class="lock" onclick="lock('${game.id}', this)">⭐</button>
+          <button onclick="like('${game.id}', this)">👍 <span class="counter">${state.likes || 0}</span></button>
+          <button onclick="dislike('${game.id}', this)">👎 <span class="counter">${state.dislikes || 0}</span></button>
+        `}
+      </div>
       <div class="buttons">
         <a href="${game.url || '#'}" target="_blank">Scheda IGDB</a>
       </div>
     `;
+
     container.appendChild(card);
   });
+}
+
+function lock(id, btn) {
+  const state = getLocalState(id);
+  state.locked = true;
+  setLocalState(id, state);
+  loadAndRender(window.location.pathname.includes('favorites') ? 'favorites' : 'deleted');
+}
+
+function unlock(id, btn) {
+  const state = getLocalState(id);
+  state.locked = false;
+  setLocalState(id, state);
+  loadAndRender(window.location.pathname.includes('favorites') ? 'favorites' : 'deleted');
+}
+
+function like(id, btn) {
+  const state = getLocalState(id);
+  state.likes = (state.likes || 0) + 1;
+  setLocalState(id, state);
+  btn.querySelector(".counter").innerText = state.likes;
+}
+
+function dislike(id, btn) {
+  const state = getLocalState(id);
+  state.dislikes = (state.dislikes || 0) + 1;
+  setLocalState(id, state);
+  btn.querySelector(".counter").innerText = state.dislikes;
 }
