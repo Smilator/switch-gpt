@@ -29,13 +29,20 @@ function renderGames(games) {
   }
 
   games.forEach(game => {
+    let imageUrl = '';
+    if (typeof game.cover === 'object' && game.cover.image_id) {
+      imageUrl = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
+    } else if (typeof game.cover === 'string') {
+      imageUrl = game.cover;
+    }
+
     const card = document.createElement('div');
     card.className = 'game-card';
     card.innerHTML = `
       <h3>${game.name}</h3>
-      ${game.cover ? `<img src="${game.cover}" alt="${game.name}" />` : ''}
+      ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" />` : ''}
       <div class="buttons">
-        <a href="${game.url}" target="_blank">Scheda IGDB</a>
+        <a href="${game.url || '#'}" target="_blank">Scheda IGDB</a>
       </div>
     `;
     container.appendChild(card);
