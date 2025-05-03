@@ -2,10 +2,21 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
+function normalizeCover(cover) {
+  if (typeof cover === 'object' && cover.image_id) {
+    return `https://images.igdb.com/igdb/image/upload/t_cover_big/${cover.image_id}.jpg`;
+  }
+  return typeof cover === 'string' ? cover : '';
+}
+
 function insertGames(table, games) {
   const stmt = db.prepare(`INSERT OR REPLACE INTO ${table} (id, name, cover, url) VALUES (?, ?, ?, ?)`);
   for (const game of games) {
-    stmt.run(game.id, game.name, game.cover, game.url);
+    const id = game.id;
+    const name = game.name || '';
+    const cover = normalizeCover(game.cover);
+    const url = game.url || '';
+    stmt.run(id, name, cover, url);
   }
   stmt.finalize();
 }
