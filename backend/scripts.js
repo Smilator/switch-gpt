@@ -49,8 +49,8 @@ function renderGames(games) {
           <button onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes}, false)">🔓 Sblocca</button>
         ` : `
           <button class="lock" onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes}, true)">⭐</button>
-          <button onclick="updateState('${game.id}', ${game.likes + 1}, ${game.dislikes}, false)">👍 <span class="counter">${game.likes}</span></button>
-          <button onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes + 1}, false)">👎 <span class="counter">${game.dislikes}</span></button>
+          <button onclick="like('${game.id}', ${game.likes}, ${game.dislikes})">👍 <span class="counter">${game.likes}</span></button>
+          <button onclick="dislike('${game.id}', ${game.likes}, ${game.dislikes})">👎 <span class="counter">${game.dislikes}</span></button>
         `}
       </div>
       <div class="buttons">
@@ -69,4 +69,12 @@ async function updateState(id, likes, dislikes, locked) {
   });
   const page = window.location.pathname.includes('favorites') ? 'favorites' : 'deleted';
   loadAndRender(page);
+}
+
+function like(id, currentLikes, currentDislikes) {
+  updateState(id, currentLikes + 1, currentDislikes, false);
+}
+
+function dislike(id, currentLikes, currentDislikes) {
+  updateState(id, currentLikes, currentDislikes + 1, false);
 }
