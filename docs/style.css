@@ -1,72 +1,36 @@
-
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: #f9fafb;
-  margin: 0;
+  font-family: sans-serif;
+  padding: 1rem;
+  background: #f8f8f8;
 }
 header {
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: #222;
+  color: white;
+  padding: 1rem;
 }
 header h1 {
-  margin: 0;
+  margin: 0 0 0.5rem;
 }
 nav a {
-  margin-left: 15px;
+  color: white;
+  margin-right: 1rem;
   text-decoration: none;
-  color: #0077cc;
-  font-weight: bold;
 }
 .container {
-  padding: 20px;
-}
-.card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  width: 220px;
-  margin: 10px;
-  padding: 10px;
-  display: inline-block;
-  vertical-align: top;
-}
-.card img {
-  max-width: 100%;
-  border-radius: 6px;
-}
-.button-row {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
-}
-.alpha-buttons, .counter {
-  text-align: center;
-  margin: 10px 0;
-}
-.alpha-buttons {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
+  gap: 1rem;
+  padding: 1rem;
 }
-.alpha-buttons button {
-  border: none;
-  background: #ddd;
-  padding: 6px 10px;
-  border-radius: 5px;
-  cursor: pointer;
+.game-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  width: 200px;
 }
-.alpha-buttons button.active {
-  background: #0077cc;
-  color: white;
-}
-.loader {
-  text-align: center;
-  font-size: 0.9em;
-  color: #777;
-  padding: 10px;
+.game-card img {
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 0.5rem;
 }
