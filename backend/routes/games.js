@@ -15,7 +15,7 @@ function insertGames(table, games) {
     const id = game.id;
     const name = game.name || '';
     const cover = normalizeCover(game.cover);
-    const url = game.url || '';
+    const url = game.url || (game.slug ? `https://www.igdb.com/games/${game.slug}` : '');
     stmt.run(id, name, cover, url);
   }
   stmt.finalize();
