@@ -9,47 +9,36 @@ function normalizeCover(cover) {
   return typeof cover === 'string' ? cover : '';
 }
 
-function insertGames(table, games) {
-  const stmt = db.prepare(`INSERT OR REPLACE INTO ${table} (id, name, cover, url) VALUES (?, ?, ?, ?)`);
+async function insertGames(table, games) {
   for (const game of games) {
     const id = game.id;
     const name = game.name || '';
     const cover = normalizeCover(game.cover);
     const url = game.url || (game.slug ? `https://www.igdb.com/games/${game.slug}` : '');
-    stmt.run(id, name, cover, url);
+    await db.query(
+      `INSERT INTO ${table} (id, name, cover, url)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO UPDATE SET name = $2, cover = $3, url = $4`,
+      [id, name, cover, url]
+    );
   }
-  stmt.finalize();
 }
 
-router.post('/import', (req, res) => {
+router.post('/import', async (req, res) => {
   const { favorites = [], deleted = [], collection = [] } = req.body;
-
-  insertGames('favorites', favorites);
-  insertGames('deleted', deleted);
-  insertGames('collection', collection);
-
+  await insertGames('favorites', favorites);
+  await insertGames('deleted', deleted);
+  await insertGames('collection', collection);
   res.json({ message: 'Import completed successfully' });
 });
 
-router.get('/favorites', (req, res) => {
-  db.all('SELECT * FROM favorites ORDER BY name', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+router.get('/:type(favorites|deleted|collection)', async (req, res) => {
+  try {
+    const { rows } = await db.query(`SELECT * FROM ${req.params.type} ORDER BY name`);
     res.json(rows);
-  });
-});
-
-router.get('/deleted', (req, res) => {
-  db.all('SELECT * FROM deleted ORDER BY name', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-router.get('/collection', (req, res) => {
-  db.all('SELECT * FROM collection ORDER BY name', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
