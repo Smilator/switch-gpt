@@ -1,13 +1,13 @@
+const API_BASE = "https://switch-gpt.onrender.com";
 
-async function fetchAndRender(type) {
-  const res = await fetch(`/api/${type}`);
-  const data = await res.json();
-  renderGames(data, type);
+async function loadFavoritesFromAPI() {
+  const res = await fetch(`${API_BASE}/api/favorites`);
+  const favorites = await res.json();
+  renderGames(favorites);
 }
 
-function renderGames(games, type) {
+function renderGames(games) {
   const container = document.getElementById('game-list');
-  if (!container) return;
   container.innerHTML = '';
   games.forEach(game => {
     const card = document.createElement('div');
@@ -15,18 +15,10 @@ function renderGames(games, type) {
     card.innerHTML = `
       <h3>${game.name}</h3>
       <img src="${game.cover}" alt="${game.name}" />
-      <div class="buttons">
-        <a href="${game.url}" target="_blank">Scheda IGDB</a>
-      </div>
+      <p><a href="${game.url}" target="_blank">Scheda IGDB</a></p>
     `;
     container.appendChild(card);
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.pathname.includes('favorites')) {
-    fetchAndRender('favorites');
-  } else if (window.location.pathname.includes('deleted')) {
-    fetchAndRender('deleted');
-  }
-});
+document.addEventListener('DOMContentLoaded', loadFavoritesFromAPI);
