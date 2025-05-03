@@ -15,11 +15,17 @@ async function insertGames(table, games) {
     const name = game.name || '';
     const cover = normalizeCover(game.cover);
     const url = game.url || (game.slug ? `https://www.igdb.com/games/${game.slug}` : '');
+    const likes = game.likes || 0;
+    const dislikes = game.dislikes || 0;
+    const locked = !!game.locked;
+
     await db.query(
-      `INSERT INTO ${table} (id, name, cover, url)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (id) DO UPDATE SET name = $2, cover = $3, url = $4`,
-      [id, name, cover, url]
+      `INSERT INTO ${table} (id, name, cover, url, likes, dislikes, locked)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (id) DO UPDATE SET
+         name = $2, cover = $3, url = $4,
+         likes = $5, dislikes = $6, locked = $7`,
+      [id, name, cover, url, likes, dislikes, locked]
     );
   }
 }
@@ -36,6 +42,20 @@ router.get('/:type(favorites|deleted|collection)', async (req, res) => {
   try {
     const { rows } = await db.query(`SELECT * FROM ${req.params.type} ORDER BY name`);
     res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/favorites/:id/state', async (req, res) => {
+  const { id } = req.params;
+  const { likes, dislikes, locked } = req.body;
+  try {
+    await db.query(
+      `UPDATE favorites SET likes = $1, dislikes = $2, locked = $3 WHERE id = $4`,
+      [likes, dislikes, locked, id]
+    );
+    res.json({ message: 'State updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -12,7 +12,10 @@ async function initialize() {
       id TEXT PRIMARY KEY,
       name TEXT,
       cover TEXT,
-      url TEXT
+      url TEXT,
+      likes INTEGER DEFAULT 0,
+      dislikes INTEGER DEFAULT 0,
+      locked BOOLEAN DEFAULT false
     );
   `);
   await pool.query(`

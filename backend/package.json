@@ -1,5 +1,5 @@
 {
-  "name": "switch-backend-pg",
+  "name": "switch-backend-globalstate",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
