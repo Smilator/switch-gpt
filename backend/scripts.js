@@ -30,18 +30,12 @@ function renderGames(games, type) {
   }
 
   games.forEach(game => {
-    let imageUrl = '';
-    if (typeof game.cover === 'object' && game.cover.image_id) {
-      imageUrl = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
-    } else if (typeof game.cover === 'string') {
-      imageUrl = game.cover;
-    }
-
     const card = document.createElement('div');
     card.className = 'game-card';
     card.id = `card-${game.id}`;
     if (game.locked) card.classList.add('locked');
 
+    const imageUrl = typeof game.cover === 'string' ? game.cover : '';
     card.innerHTML = `
       <h3>${game.name}</h3>
       ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" />` : ''}
@@ -61,40 +55,35 @@ function renderControls(game) {
     return `<button onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes}, false)">🔓 Sblocca</button>`;
   } else {
     return `
-      <button class="lock" onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes}, true)">⭐</button>
-      <button onclick="like('${game.id}', ${game.likes}, ${game.dislikes})">👍 <span class="counter" id="like-${game.id}">${game.likes}</span></button>
-      <button onclick="dislike('${game.id}', ${game.likes}, ${game.dislikes})">👎 <span class="counter" id="dislike-${game.id}">${game.dislikes}</span></button>
+      <button onclick="updateState('${game.id}', ${game.likes}, ${game.dislikes}, true)">⭐</button>
+      <button onclick="vote('${game.id}', ${game.likes + 1}, ${game.dislikes})">👍 <span id="like-${game.id}">${game.likes}</span></button>
+      <button onclick="vote('${game.id}', ${game.likes}, ${game.dislikes + 1})">👎 <span id="dislike-${game.id}">${game.dislikes}</span></button>
     `;
   }
 }
 
 async function updateState(id, likes, dislikes, locked) {
-  await fetch(`${API_BASE}/api/favorites/${id}/state`, {
+  const res = await fetch(`${API_BASE}/api/favorites/${id}/state`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ likes, dislikes, locked })
   });
 
-  const controls = document.getElementById(`controls-${id}`);
-  const game = { id, likes, dislikes, locked };
-  controls.innerHTML = renderControls(game);
+  if (res.ok) {
+    const controls = document.getElementById(`controls-${id}`);
+    controls.innerHTML = renderControls({ id, likes, dislikes, locked });
 
-  const card = document.getElementById(`card-${id}`);
-  if (locked) {
-    card.classList.add('locked');
+    const card = document.getElementById(`card-${id}`);
+    if (locked) {
+      card.classList.add('locked');
+    } else {
+      card.classList.remove('locked');
+    }
   } else {
-    card.classList.remove('locked');
+    alert("Errore nel salvataggio");
   }
 }
 
-function like(id, currentLikes, currentDislikes) {
-  const newLikes = currentLikes + 1;
-  document.getElementById(`like-${id}`).innerText = newLikes;
-  updateState(id, newLikes, currentDislikes, false);
-}
-
-function dislike(id, currentLikes, currentDislikes) {
-  const newDislikes = currentDislikes + 1;
-  document.getElementById(`dislike-${id}`).innerText = newDislikes;
-  updateState(id, currentLikes, newDislikes, false);
+function vote(id, likes, dislikes) {
+  updateState(id, likes, dislikes, false);
 }
