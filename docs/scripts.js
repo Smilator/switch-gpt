@@ -97,3 +97,18 @@ function dislike(id, btn) {
   setLocalState(id, state);
   btn.querySelector(".counter").innerText = state.dislikes;
 }
+
+
+document.querySelectorAll('.like-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const gameId = button.dataset.id;
+    fetch(`/api/games/${gameId}/like`, { method: 'POST' });
+  });
+});
+
+document.querySelectorAll('.dislike-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const gameId = button.dataset.id;
+    fetch(`/api/games/${gameId}/dislike`, { method: 'POST' });
+  });
+});
