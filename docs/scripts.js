@@ -1,4 +1,5 @@
 
+// Attacca eventi click sui bottoni
 document.querySelectorAll('.like-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const gameId = btn.dataset.id;
@@ -36,4 +37,11 @@ document.querySelectorAll('.lock-btn').forEach(btn => {
                 }
             });
     });
+});
+
+// Inizializza stato locked al caricamento
+document.querySelectorAll('.game-card').forEach(card => {
+    if (card.dataset.locked === 'true') {
+        card.classList.add('locked');
+    }
 });

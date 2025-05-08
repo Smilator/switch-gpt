@@ -3,7 +3,16 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Existing GET or other routes remain...
+// GET favorites (include likes, dislikes, locked)
+router.get('/favorites', async (req, res) => {
+    try {
+        const result = await db.query('SELECT id, name, likes, dislikes, locked FROM games WHERE favorite = true');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching favorites');
+    }
+});
 
 // Increment like
 router.post('/:id/like', async (req, res) => {
@@ -41,5 +50,4 @@ router.post('/:id/lock', async (req, res) => {
     }
 });
 
-// Export routes
 module.exports = router;
