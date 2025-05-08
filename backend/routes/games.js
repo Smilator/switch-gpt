@@ -3,10 +3,14 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET favorites (include likes, dislikes, locked)
+// GET favorites con JOIN
 router.get('/favorites', async (req, res) => {
     try {
-        const result = await db.query('SELECT id, name, likes, dislikes, locked FROM games WHERE favorite = true');
+        const result = await db.query(`
+            SELECT g.id, g.name, g.likes, g.dislikes, g.locked
+            FROM games g
+            JOIN favorites f ON g.id = f.game_id
+        `);
         res.json(result.rows);
     } catch (err) {
         console.error(err);
