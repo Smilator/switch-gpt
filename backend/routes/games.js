@@ -64,38 +64,24 @@ router.post('/favorites/:id/state', async (req, res) => {
 module.exports = router;
 
 
-// Aggiorna like
+// Increment like
 router.post('/:id/like', async (req, res) => {
-  const gameId = req.params.id;
-  try {
-    await db.query('UPDATE games SET likes = COALESCE(likes, 0) + 1 WHERE id = $1', [gameId]);
+    const { id } = req.params;
+    await db.query('UPDATE games SET likes = likes + 1 WHERE id = $1', [id]);
     res.sendStatus(200);
-  } catch (err) {
-    console.error("Errore durante l'aggiornamento dei like:", err);
-    res.sendStatus(500);
-  }
 });
 
-// Aggiorna dislike
+// Increment dislike
 router.post('/:id/dislike', async (req, res) => {
-  const gameId = req.params.id;
-  try {
-    await db.query('UPDATE games SET dislikes = COALESCE(dislikes, 0) + 1 WHERE id = $1', [gameId]);
+    const { id } = req.params;
+    await db.query('UPDATE games SET dislikes = dislikes + 1 WHERE id = $1', [id]);
     res.sendStatus(200);
-  } catch (err) {
-    console.error("Errore durante l'aggiornamento dei dislike:", err);
-    res.sendStatus(500);
-  }
 });
 
-// Blocca il gioco
+// Toggle lock
 router.post('/:id/lock', async (req, res) => {
-  const gameId = req.params.id;
-  try {
-    await db.query('UPDATE games SET locked = TRUE WHERE id = $1', [gameId]);
+    const { id } = req.params;
+    await db.query('UPDATE games SET locked = NOT locked WHERE id = $1', [id]);
     res.sendStatus(200);
-  } catch (err) {
-    console.error("Errore durante l'aggiornamento dello stato locked:", err);
-    res.sendStatus(500);
-  }
 });
+
